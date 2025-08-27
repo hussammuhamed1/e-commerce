@@ -9,10 +9,11 @@ export default async function Home() {
 
   return (
     <>
+    {/* slider */}
       <main className="overflow-hidden">
         <MainSlider />
       </main>
-
+      {/* products */}
       <section>
         <div className="container mx-auto px-4 py-8">
           <h2 className="text-2xl font-bold mb-6">Featured Products</h2>

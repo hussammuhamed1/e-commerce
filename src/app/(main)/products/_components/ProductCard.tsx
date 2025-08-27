@@ -12,14 +12,14 @@ export default function ProductCard({ product }: { product: IProduct }) {
     const [liked, setLiked] = useState(false);
 
     return (
-        <Card className="group overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition">
+        <Card className=" group overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition ">
             {/* Product Image */}
             <div className="relative w-full h-100">
                 <Image
                     src={product.imageCover}
                     alt={product.description}
                     fill
-                    className="object-cover group-hover:scale-105 transition"
+                    className=" object-cover group-hover:scale-105 transition"
                 />
 
                 {/* Wishlist Heart */}
