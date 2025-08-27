@@ -36,7 +36,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
 
             {/* Content */}
             <CardContent className="p-4 space-y-2">
-                <Link href={`/product/${product._id}`}>
+                <Link href={`/products/${product._id}`}>
                     <h3 className="text-lg font-semibold truncate">{product.title}</h3>
                 </Link>
 
