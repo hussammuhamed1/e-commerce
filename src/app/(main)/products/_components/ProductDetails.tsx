@@ -1,15 +1,17 @@
 "use client"
+
 import { Button } from "@/components/ui/button"
 import { CardContent, CardFooter } from "@/components/ui/card"
 import { IProduct } from "@/types/product.type"
 import { ShoppingCart, Star } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
-import { notFound } from "next/navigation"
 import Slider from "react-slick"
 
-export default async function ProductDetails({ product }: { product: IProduct }) {
-  const settings = {
+export default function ProductDetails({ product }: { product: IProduct }) {
+  if (!product) return null // or use notFound()
 
+  const settings = {
     dots: true,
     dotsClass: "slick-dots",
     infinite: true,
@@ -18,29 +20,17 @@ export default async function ProductDetails({ product }: { product: IProduct })
     slidesToScroll: 1,
   }
 
-
-
-
-
   return (
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* Image */}
+        {/* Image Slider */}
         <div className="slider-container pb-4">
-          <Slider {...settings} >
-            <div className=''>
-              <img src={product.images[0]} />
-            </div>
-            <div>
-              <img src={product.images[1]} />
-            </div>
-            <div>
-              <img src={product.images[2]} />
-            </div>
-            <div>
-              <img src={product.images[3]} />
-            </div>
+          <Slider {...settings}>
+            {product.images.map((img, i) => (
+              <div key={i}>
+                <Image src={img} alt={product.title} width={500} height={250}  className=" h-auto rounded-lg" />
+              </div>
+            ))}
           </Slider>
         </div>
 
@@ -48,26 +38,26 @@ export default async function ProductDetails({ product }: { product: IProduct })
         <div className="flex flex-col justify-between">
           <CardContent className="p-4 space-y-2">
             <Link href={`/products/${product._id}`}>
-              <h3 className="text-lg font-semibold truncate">{product.title}</h3>
+              <h3 className="text-5xl font-semibold truncate">{product.title}</h3>
             </Link>
 
-            <p className="text-green-500 font-bold">{product.brand.name}</p>
-            <p className="text-primary font-bold">${product.price}</p>
+            <p className="text-green-500 font-bold text-2xl mt-5">{product.brand?.name}</p>
+            <p className="text-primary font-bold text-2xl">{product.price} EGP</p>
 
             {/* Rating */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 text-lg">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 ${i < Math.round(product.ratingsAverage)
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-gray-300"
-                    }`}
+                  className={`h-4 w-4 ${
+                    i < Math.round(product.ratingsAverage)
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-gray-300"
+                  }`}
                 />
               ))}
               <span className="ml-1 text-sm text-gray-500">
-                ({product.ratingsAverage})
-                ({product.ratingsQuantity} reviews)
+                ({product.ratingsAverage}) – {product.ratingsQuantity} reviews
               </span>
             </div>
           </CardContent>

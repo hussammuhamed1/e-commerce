@@ -41,7 +41,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
                 </Link>
 
                 <p className="text-green-500 font-bold">{product.brand.name}</p>
-                <p className="text-primary font-bold">${product.price}</p>
+                <p className="text-primary font-bold">{product.price} EGP</p>
 
                 {/* Rating */}
                 <div className="flex items-center gap-1">

@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { ShoppingCart, User, Search, Menu, X } from "lucide-react"
+import { ShoppingCart, User, Search, Menu, X, LogIn } from "lucide-react"
 
 export default function Navbar() {
     const [search, setSearch] = useState("")
@@ -32,17 +32,24 @@ export default function Navbar() {
 
                 {/* Icons + Mobile Menu Toggle */}
                 <div className="flex items-center gap-3">
-                    <Button variant="ghost" size="icon">
-                        <User className="h-5 w-5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="relative">
-                        <ShoppingCart className="h-5 w-5" />
-                        {cartCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-primary text-white text-xs px-1.5 rounded-full">
-                                {cartCount}
-                            </span>
-                        )}
-                    </Button>
+                    <Link href="/auth/login">
+                        <Button variant="ghost" size="default">
+
+                            Log In<LogIn className="h-5 w-5" />
+                        </Button>
+                    </Link>
+                    <div className="mx-3"></div>
+                    <Link href="/cart" className="relative">
+
+                        <Button variant="ghost" size="icon" className="relative">
+                            <ShoppingCart className="h-5 w-5 " />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs px-1.5 rounded-full">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </Button>
+                    </Link>
                     {/* Mobile Hamburger */}
                     <Button
                         variant="ghost"
