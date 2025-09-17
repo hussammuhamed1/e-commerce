@@ -7,9 +7,13 @@ import { ShoppingCart, Star } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import Slider from "react-slick"
+import { addToCart } from "@/lib/services/cart" 
+import { useSession } from "next-auth/react"
+import { toast } from "sonner"
 
 export default function ProductDetails({ product }: { product: IProduct }) {
-  if (!product) return null // or use notFound()
+   const { data: session } = useSession();
+  if (!product) return null
 
   const settings = {
     dots: true,
@@ -20,6 +24,21 @@ export default function ProductDetails({ product }: { product: IProduct }) {
     slidesToScroll: 1,
   }
 
+  // handle Add to Cart
+const handleAddToCart = async () => {
+    if (!session?.token) {
+      toast.error("Please login first");
+      return;
+    }
+
+    try {
+    const data = await addToCart(product?._id);
+      
+      toast.success(`${product.title} added to cart`);
+    } catch (err) {
+      toast.error("Failed to add product to cart");
+    }
+  };
   return (
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -28,7 +47,13 @@ export default function ProductDetails({ product }: { product: IProduct }) {
           <Slider {...settings}>
             {product.images.map((img, i) => (
               <div key={i}>
-                <Image src={img} alt={product.title} width={500} height={250}  className=" h-auto rounded-lg" />
+                <Image
+                  src={img}
+                  alt={product.title}
+                  width={500}
+                  height={250}
+                  className="h-auto rounded-lg"
+                />
               </div>
             ))}
           </Slider>
@@ -38,11 +63,17 @@ export default function ProductDetails({ product }: { product: IProduct }) {
         <div className="flex flex-col justify-between">
           <CardContent className="p-4 space-y-2">
             <Link href={`/products/${product._id}`}>
-              <h3 className="text-5xl font-semibold truncate">{product.title}</h3>
+              <h3 className="text-5xl font-semibold truncate">
+                {product.title}
+              </h3>
             </Link>
 
-            <p className="text-green-500 font-bold text-2xl mt-5">{product.brand?.name}</p>
-            <p className="text-primary font-bold text-2xl">{product.price} EGP</p>
+            <p className="text-green-500 font-bold text-2xl mt-5">
+              {product.brand?.name}
+            </p>
+            <p className="text-primary font-bold text-2xl">
+              {product.price} EGP
+            </p>
 
             {/* Rating */}
             <div className="flex items-center gap-1 text-lg">
@@ -64,7 +95,10 @@ export default function ProductDetails({ product }: { product: IProduct }) {
 
           {/* Footer */}
           <CardFooter className="p-4 pt-0 flex justify-between items-center">
-            <Button className="w-full flex justify-center items-center rounded-2xl">
+            <Button
+              className="w-full flex justify-center items-center rounded-2xl"
+              onClick={handleAddToCart}
+            >
               Add to cart
               <ShoppingCart className="h-5 w-5 ml-2" />
             </Button>

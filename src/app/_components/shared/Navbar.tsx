@@ -6,12 +6,19 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart, Menu, X, LogIn, LogOut } from "lucide-react"
 import { useSession, signIn, signOut } from "next-auth/react"
+import { useCart } from "@/context/CartContext"
 
 export default function Navbar() {
+
+const handledata=()=>{
+ const  getCartdata = useCart();
+}
+
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [cartCount, setCartCount] = useState(0)
+
 
   const { data: session, status } = useSession()
+  const {cartcount} = useCart();
 
   return (
     <header className="w-full border-b shadow-sm bg-white relative z-50">
@@ -66,15 +73,16 @@ export default function Navbar() {
 
           {/* Cart */}
           <Link href="/cart" className="relative">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button onClick={handledata} variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
+              {  (
                 <span className="absolute -top-1 -right-1 bg-primary text-white text-xs px-1.5 rounded-full">
-                  {cartCount}
+                  {cartcount}
                 </span>
               )}
             </Button>
           </Link>
+          
 
           {/* Mobile Hamburger */}
           <Button

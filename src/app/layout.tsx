@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import Footer from "./_components/shared/Footer"
 import { Providers } from "./providers"
+import { Toaster } from "sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           {children}
+           <Toaster richColors position="top-center" /> 
           <Footer />
         </Providers>
       </body>
