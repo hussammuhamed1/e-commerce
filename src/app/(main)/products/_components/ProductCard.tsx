@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart, Star } from "lucide-react";
@@ -9,41 +9,109 @@ import { IProduct } from "@/types/product.type";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { addToCart } from "@/lib/services/cart";
+import {
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist,
+} from "@/lib/services/wishlist";
 import { toast } from "sonner";
 
 export default function ProductCard({ product }: { product: IProduct }) {
   const [liked, setLiked] = useState(false);
+  const [loadingWishlist, setLoadingWishlist] = useState(false);
   const { data: session } = useSession();
+  const token = session?.token;
 
-const handleAddToCart = async () => {
-  if (!session?.token) {
-    toast.error("Please login first");
-    return;
-  }
+  // preload liked state
+  useEffect(() => {
+    if (!token) return;
+    const checkWishlist = async () => {
+      try {
+        const wishlist = await getWishlist();
 
-  try {
-    const data = await addToCart(product?._id, session.token); // Pass token here
-    console.log(data);
-    toast.success(`${product.title} added to cart`);
-  } catch (err) {
-    toast.error("Failed to add product to cart");
-  }
-};
+        // normalize API response: could be { products: [] } or { data: [] }
+        const items = wishlist.products || wishlist.data || [];
+
+        const isLiked = items.some(
+          (p: any) => p._id === product._id || p.id === product._id
+        );
+
+        setLiked(isLiked);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    checkWishlist();
+  }, [token, product._id]);
+
+  const handleAddToCart = async () => {
+    if (!token) {
+      toast.error("Please login first");
+      return;
+    }
+
+    try {
+      await addToCart(product._id, token);
+      toast.success(`${product.title} added to cart`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add product to cart");
+    }
+  };
+
+  const handleWishlist = async () => {
+    if (!token) {
+      toast.error("Please login first to use wishlist");
+      return;
+    }
+
+    setLoadingWishlist(true);
+
+    // Optimistically update UI
+    setLiked((prev) => !prev);
+
+    try {
+      if (!liked) {
+        const res = await addToWishlist(product._id);
+        if (res.error) {
+          toast.error(res.error);
+          setLiked(false); // rollback
+        } else {
+          toast.success("Added to wishlist!");
+        }
+      } else {
+        const res = await removeFromWishlist(product._id);
+        if (res.error) {
+          toast.error(res.error);
+          setLiked(true); // rollback
+        } else {
+          toast.info("Removed from wishlist!");
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+      setLiked((prev) => !prev); // rollback if failed
+    }
+
+    setLoadingWishlist(false);
+  };
 
   return (
-    <Card className=" group overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition ">
+    <Card className="group overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition">
       {/* Product Image */}
       <div className="relative w-full h-100">
         <Image
           src={product.imageCover}
           alt={product.description}
           fill
-          className=" object-cover group-hover:scale-105 transition"
+          className="object-cover group-hover:scale-105 transition"
         />
 
         {/* Wishlist Heart */}
         <Button
-          onClick={() => setLiked(!liked)}
+          onClick={handleWishlist}
+          disabled={loadingWishlist}
           className="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white shadow-md"
         >
           <Heart
