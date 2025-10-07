@@ -83,7 +83,7 @@ export default function Page() {
           )}
         />
         <p>
-          don't have an acount?
+          don't have an account?
           <Link href="/auth/register" className="underline">
             signup
           </Link>
