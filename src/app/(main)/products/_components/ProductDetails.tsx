@@ -13,6 +13,8 @@ import { toast } from "sonner"
 
 export default function ProductDetails({ product }: { product: IProduct }) {
    const { data: session } = useSession();
+     
+  const token = session?.token;
   if (!product) return null
 
   const settings = {
@@ -32,7 +34,7 @@ const handleAddToCart = async () => {
     }
 
     try {
-    const data = await addToCart(product?._id);
+    const data = await addToCart(product?._id,token!);
       
       toast.success(`${product.title} added to cart`);
     } catch (err) {
