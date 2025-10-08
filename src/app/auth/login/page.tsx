@@ -47,6 +47,7 @@ export default function Page() {
       toast.error(res?.error);
     } else {
       router.push("/");
+      window.location.reload();
     }
   }
 
